@@ -9,7 +9,8 @@
  
 <node name   ="sim_planning_demo" pkg ="pointcloudTraj" type   ="sim_planning_demo" output = "screen" required="true">        
         <remap from="~waypoints"       to="/waypoint_generator/waypoints"/>
-        <remap from="~odometry"        to="/odom/fake_odom"/>
+        <!-- <remap from="~odometry"        to="/odom/fake_odom"/> -->
+        <remap from="~odometry" to="/vins_estimator/camera_pose"/>
         <remap from="~PointCloud"      to="/map_server/local_map" />
         <remap from="~position_cmd"    to="/position_cmd"  />
 
@@ -52,9 +53,8 @@
 </node>
 
 <node name ="map_server" pkg ="pointcloudTraj" type ="map_server" output = "screen">    
-        <!-- 修改此处，接入真正的地图 -->
         <!-- <remap from="~odometry" to="/odom/fake_odom"/> -->
-        <remap from="~odometry" to="/"/>
+        <remap from="~odometry" to="/vins_estimator/camera_pose"/>
         <!-- <remap from="~pointCloud" to="/random_map/all_map"/> -->
         <remap from="~pointCloud" to="/surfel_fusion/raw_pointcloud"/>
         <param name="LocalSensing/radius" value="30.0"/>        
@@ -63,16 +63,17 @@
 </node>
 
 <node pkg = "pointcloudTraj" type = "traj_server" output = "screen" name = "trajectory_server">
-        <remap  from = "~trajectory"        to = "/sim_planning_demo/trajectory"/>
-        <remap  from = "~odometry"          to = "/odom/fake_odom"/>
+        <remap  from = "~trajectory" to = "/sim_planning_demo/trajectory"/>
+        <!-- <remap  from = "~odometry"  to = "/odom/fake_odom"/> -->
+        <remap from="~odometry" to="/vins_estimator/camera_pose"/>
         <remap  from = "~position_command"  to = "/position_cmd"/>
-
         <param name="optimization/poly_order_min"           value="4"/> 
         <param name="optimization/poly_order_max"           value="8"/> 
 </node>
 
 <node pkg  = "pointcloudTraj" type = "odom_generator" output = "screen" name = "odom_generator">    
-  <remap from = "~odometry"  to = "/odom/fake_odom"/>
+  <!-- <remap from = "~odometry"  to = "/odom/fake_odom"/> -->
+  <remap from="~odometry" to="/vins_estimator/camera_pose"/>
   <remap from = "~command"   to = "/position_cmd"/>
   <param name="init_x"  value="$(arg init_x)"/>
   <param name="init_y"  value="$(arg init_y)"/>
@@ -91,7 +92,8 @@
 </node>
 
 <node name ="random_map" pkg ="pointcloudTraj" type ="random_map" output = "screen">    
-        <remap from="~odometry"     to="/odom/fake_odom"/>    
+        <!-- <remap from="~odometry"     to="/odom/fake_odom"/>     -->
+        <remap from="~odometry" to="/vins_estimator/camera_pose"/>
 
         <param name="mapBoundary/lower_x"      value="-50.0"/>
         <param name="mapBoundary/upper_x"      value=" 50.0"/>
